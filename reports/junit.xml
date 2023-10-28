@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="1.768" timestamp="2023-10-28T01:20:13.210210" hostname="MacBook-Pro-de-Isaias.local"><testcase classname="tests.model.test_model.TestModel" name="test_model_fit" time="0.141"><failure message="ValueError: DataFrame.dtypes for data must be int, float, bool or category. When categorical type is supplied, The experimental DMatrix parameter`enable_categorical` must be set to `True`.  Invalid columns:Fecha-I: object, Vlo-I: object, Ori-I: object, Des-I: object, Emp-I: object, Fecha-O: object, Vlo-O: object, Ori-O: object, Des-O: object, Emp-O: object, DIANOM: object, TIPOVUELO: object, OPERA: object, SIGLAORI: object, SIGLADES: object, period_day: object">self = &lt;tests.model.test_model.TestModel testMethod=test_model_fit&gt;
+
+    def test_model_fit(
+        self
+    ):
+        features, target = self.model.preprocess(
+            data=self.data,
+            target_column="delay"
+        )
+    
+        _, features_validation, _, target_validation = train_test_split(features, target, test_size = 0.33, random_state = 42)
+    
+&gt;       self.model.fit(
+            features=features,
+            target=target
+        )
+
+tests/model/test_model.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+challenge/model.py:25: in fit
+    self._model.fit(features, target)
+/opt/homebrew/lib/python3.11/site-packages/xgboost/core.py:729: in inner_f
+    return func(**kwargs)
+/opt/homebrew/lib/python3.11/site-packages/xgboost/sklearn.py:1496: in fit
+    train_dmatrix, evals = _wrap_evaluation_matrices(
+/opt/homebrew/lib/python3.11/site-packages/xgboost/sklearn.py:534: in _wrap_evaluation_matrices
+    train_dmatrix = create_dmatrix(
+/opt/homebrew/lib/python3.11/site-packages/xgboost/sklearn.py:954: in _create_dmatrix
+    return QuantileDMatrix(
+/opt/homebrew/lib/python3.11/site-packages/xgboost/core.py:729: in inner_f
+    return func(**kwargs)
+/opt/homebrew/lib/python3.11/site-packages/xgboost/core.py:1528: in __init__
+    self._init(
+/opt/homebrew/lib/python3.11/site-packages/xgboost/core.py:1587: in _init
+    it.reraise()
+/opt/homebrew/lib/python3.11/site-packages/xgboost/core.py:575: in reraise
+    raise exc  # pylint: disable=raising-bad-type
+/opt/homebrew/lib/python3.11/site-packages/xgboost/core.py:556: in _handle_exception
+    return fn()
+/opt/homebrew/lib/python3.11/site-packages/xgboost/core.py:640: in &lt;lambda&gt;
+    return self._handle_exception(lambda: self.next(input_data), 0)
+/opt/homebrew/lib/python3.11/site-packages/xgboost/data.py:1280: in next
+    input_data(**self.kwargs)
+/opt/homebrew/lib/python3.11/site-packages/xgboost/core.py:729: in inner_f
+    return func(**kwargs)
+/opt/homebrew/lib/python3.11/site-packages/xgboost/core.py:623: in input_data
+    new, cat_codes, feature_names, feature_types = _proxy_transform(
+/opt/homebrew/lib/python3.11/site-packages/xgboost/data.py:1315: in _proxy_transform
+    arr, feature_names, feature_types = _transform_pandas_df(
+/opt/homebrew/lib/python3.11/site-packages/xgboost/data.py:490: in _transform_pandas_df
+    _invalid_dataframe_dtype(data)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+data =                    Fecha-I Vlo-I Ori-I Des-I Emp-I              Fecha-O  ...              OPERA  SIGLAORI SIGLADES per...-12-31 15:04:00  ...       JetSmart SPA  Santiago     Lima      tarde            0       9.0
+
+[68206 rows x 21 columns]
+
+    def _invalid_dataframe_dtype(data: DataType) -&gt; None:
+        # pandas series has `dtypes` but it's just a single object
+        # cudf series doesn't have `dtypes`.
+        if hasattr(data, "dtypes") and hasattr(data.dtypes, "__iter__"):
+            bad_fields = [
+                f"{data.columns[i]}: {dtype}"
+                for i, dtype in enumerate(data.dtypes)
+                if dtype.name not in _pandas_dtype_mapper
+            ]
+            err = " Invalid columns:" + ", ".join(bad_fields)
+        else:
+            err = ""
+    
+        type_err = "DataFrame.dtypes for data must be int, float, bool or category."
+        msg = f"""{type_err} {_ENABLE_CAT_ERR} {err}"""
+&gt;       raise ValueError(msg)
+E       ValueError: DataFrame.dtypes for data must be int, float, bool or category. When categorical type is supplied, The experimental DMatrix parameter`enable_categorical` must be set to `True`.  Invalid columns:Fecha-I: object, Vlo-I: object, Ori-I: object, Des-I: object, Emp-I: object, Fecha-O: object, Vlo-O: object, Ori-O: object, Des-O: object, Emp-O: object, DIANOM: object, TIPOVUELO: object, OPERA: object, SIGLAORI: object, SIGLADES: object, period_day: object
+
+/opt/homebrew/lib/python3.11/site-packages/xgboost/data.py:308: ValueError</failure></testcase><testcase classname="tests.model.test_model.TestModel" name="test_model_predict" time="0.105"><failure message="AttributeError: 'NoneType' object has no attribute 'predict'">self = &lt;tests.model.test_model.TestModel testMethod=test_model_predict&gt;
+
+    def test_model_predict(
+        self
+    ):
+        features = self.model.preprocess(
+            data=self.data
+        )
+    
+&gt;       predicted_targets = self.model.predict(
+            features=features
+        )
+
+tests/model/test_model.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;challenge.model.DelayModel object at 0x1670ac590&gt;
+features =                    Fecha-I Vlo-I Ori-I Des-I Emp-I              Fecha-O  ...  SIGLAORI SIGLADES period_day high_season...C   JAT  2017-12-31 15:04:00  ...  Santiago     Lima      tarde           0       9.0      0
+
+[68206 rows x 22 columns]
+
+    def predict(self, features: pd.DataFrame) -&gt; List[int]:
+&gt;       predictions = self._model.predict(features)
+E       AttributeError: 'NoneType' object has no attribute 'predict'
+
+challenge/model.py:28: AttributeError</failure></testcase><testcase classname="tests.model.test_model.TestModel" name="test_model_preprocess_for_serving" time="0.101"><failure message="AssertionError: assert 22 == 10&#10; +  where 10 = len(['OPERA_Latin American Wings', 'MES_7', 'MES_10', 'OPERA_Grupo LATAM', 'MES_12', 'TIPOVUELO_I', ...])&#10; +    where ['OPERA_Latin American Wings', 'MES_7', 'MES_10', 'OPERA_Grupo LATAM', 'MES_12', 'TIPOVUELO_I', ...] = &lt;tests.model.test_model.TestModel testMethod=test_model_preprocess_for_serving&gt;.FEATURES_COLS">self = &lt;tests.model.test_model.TestModel testMethod=test_model_preprocess_for_serving&gt;
+
+    def test_model_preprocess_for_serving(
+        self
+    ):
+        features = self.model.preprocess(
+            data=self.data
+        )
+    
+        assert isinstance(features, pd.DataFrame)
+&gt;       assert features.shape[1] == len(self.FEATURES_COLS)
+E       AssertionError: assert 22 == 10
+E        +  where 10 = len(['OPERA_Latin American Wings', 'MES_7', 'MES_10', 'OPERA_Grupo LATAM', 'MES_12', 'TIPOVUELO_I', ...])
+E        +    where ['OPERA_Latin American Wings', 'MES_7', 'MES_10', 'OPERA_Grupo LATAM', 'MES_12', 'TIPOVUELO_I', ...] = &lt;tests.model.test_model.TestModel testMethod=test_model_preprocess_for_serving&gt;.FEATURES_COLS
+
+tests/model/test_model.py:68: AssertionError</failure></testcase><testcase classname="tests.model.test_model.TestModel" name="test_model_preprocess_for_training" time="0.121"><failure message="AssertionError: assert 21 == 10&#10; +  where 10 = len(['OPERA_Latin American Wings', 'MES_7', 'MES_10', 'OPERA_Grupo LATAM', 'MES_12', 'TIPOVUELO_I', ...])&#10; +    where ['OPERA_Latin American Wings', 'MES_7', 'MES_10', 'OPERA_Grupo LATAM', 'MES_12', 'TIPOVUELO_I', ...] = &lt;tests.model.test_model.TestModel testMethod=test_model_preprocess_for_training&gt;.FEATURES_COLS">self = &lt;tests.model.test_model.TestModel testMethod=test_model_preprocess_for_training&gt;
+
+    def test_model_preprocess_for_training(
+        self
+    ):
+        features, target = self.model.preprocess(
+            data=self.data,
+            target_column="delay"
+        )
+    
+        assert isinstance(features, pd.DataFrame)
+&gt;       assert features.shape[1] == len(self.FEATURES_COLS)
+E       AssertionError: assert 21 == 10
+E        +  where 10 = len(['OPERA_Latin American Wings', 'MES_7', 'MES_10', 'OPERA_Grupo LATAM', 'MES_12', 'TIPOVUELO_I', ...])
+E        +    where ['OPERA_Latin American Wings', 'MES_7', 'MES_10', 'OPERA_Grupo LATAM', 'MES_12', 'TIPOVUELO_I', ...] = &lt;tests.model.test_model.TestModel testMethod=test_model_preprocess_for_training&gt;.FEATURES_COLS
+
+tests/model/test_model.py:52: AssertionError</failure></testcase></testsuite></testsuites>
